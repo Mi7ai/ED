@@ -55,8 +55,8 @@ public class EDDoubleLinkedList<T> implements List<T> {
 
 
 	public EDDoubleLinkedList() {
-		head = null;
-		size = 0;
+		this.head = null;
+		this.size = 0;
 	}
 
 	//Constructor copía
@@ -72,11 +72,16 @@ public class EDDoubleLinkedList<T> implements List<T> {
 	public boolean add(T element) {
 		// IMPLEMENTAR
 		boolean retValue = false;
-
-		Node first = head.next;
+		Node nuevo = new Node(element);
+		if (head == null) {
+			head = nuevo;
+			nuevo.next = nuevo.prev = nuevo;
+		}
+		Node first = head;
 
 		Node last = first.prev;
-		Node nuevo = new Node(element);
+		
+
 		if (size() == 0) {
 			head.next = nuevo;
 		}
@@ -86,6 +91,7 @@ public class EDDoubleLinkedList<T> implements List<T> {
 			last.next = nuevo;
 
 			first.prev = nuevo;
+			
 			if (size == 1) {
 				first.next = nuevo;
 			}
@@ -97,37 +103,47 @@ public class EDDoubleLinkedList<T> implements List<T> {
 
 	public void add(int index, T element) {
 		// IMPLEMENTAR
-		Node nuevo = new Node(element);
-		Node first = head.next;
-		Node last = first.prev;
-
-
-
 		if (index < 0 || index > size()) {
 			throw new IndexOutOfBoundsException();
 		}
-
-		if (index == 0) {//al principio
-			head.next = nuevo;
-			first.prev = nuevo;
+		Node nuevo = new Node(element);
+		Node first = null;
+		Node last = null;
+		if (head!=null) { 
+			first = head;
+		 last = head.prev;	
+		}
+		if (head==null) {
+			head = nuevo;
+			nuevo.next = nuevo.prev = nuevo;
+			
+		}else if (index == 0) {//al principio
 			nuevo.next = first;
-			nuevo.prev = last;
+			nuevo.prev = last;					
+			first.prev = nuevo;
 			last.next = nuevo;
-		}else if (index == size()-1) {//ultimo
+			head = nuevo;
+		}else if (index == size()) {//ultimo
 			nuevo.prev = last;
 			nuevo.next = last.next;
-
-			first.next = nuevo;
+			first.prev = nuevo;
 			last.next = nuevo;
 		}else{//al medio
 			for (int i = 0; i < index; i++) {
-				first = first.next;//llego al siguiente del nuevo
+				first = first.next;//llego a donde hay que insertar
 			}
+			
 			nuevo.next = first;
 			nuevo.prev = first.prev;
 			first.prev.next = nuevo;
 			first.prev = nuevo;
+			
 		}
+		
+		size++;
+		
+		
+		
 
 	}
 
@@ -155,23 +171,21 @@ public class EDDoubleLinkedList<T> implements List<T> {
 		if (size() == 0) {
 			return -1;
 		}
-		Node first = head.next;
-
-		while (first != null) {
-			if (!first.equals(element)) {
-				i++;
+		Node first = head;
+		for (int j = 0; j < size(); j++) {
+			if (first.data.equals(element) ) {
+				return j;				
 			}else{
-				return i;
+				first = first.next;
 			}
-			first = first.next;
 		}
-
+		
 		return -1;
 	}
 
 	public boolean isEmpty() {
 		// IMPLEMENTAR
-		if (head.next != null) {
+		if (head != null) {
 			return false;
 		}
 		return true;
@@ -180,28 +194,45 @@ public class EDDoubleLinkedList<T> implements List<T> {
 
 	public boolean remove(Object element) {
 		// IMPLEMENTAR
-		Node first = head.next;
-		Node last = head.prev;
-
-		if (size() == 0) {
+		Node first = null;
+		int pos = indexOf(element);
+		first = head;
+		if (pos == -1) {
 			return false;
 		}
-		if (first.equals(element)) {//primero
-			head.next = first.next;
-			first.next.prev = last;
-			last.next = first.next;	
-		}else if (last.equals(element)) {//ultimo
-			last.prev.next = first;
-			first.prev = last.prev;
-		}else{//al medio
-			while (!first.equals(element)) {
-				first = first.next;
-			}
+		for (int i = 0; i < pos; i++) {
+			first = first.next;
+		}
+		if (first != null) {
 			first.prev.next = first.next;
 			first.next.prev = first.prev;
-			
-			
+			size--;
+			return true;
 		}
+		
+//		
+//		if (head != null) {
+//			 first = head.next;
+//			 last = head.prev;
+//		}
+//		if (head == null) {
+//			return false;
+//		}else if (first.data.equals(element)) {//primero
+//			head.next = first.next;
+//			first.next.prev = last;
+//			last.next = first.next;	
+//		}else if (last.data.equals(element)) {//ultimo
+//			last.prev.next = first;
+//			first.prev = last.prev;
+//		}else{//al medio
+//			while (!first.data.equals(element)) {
+//				first = first.next;
+//			}
+//			first.prev.next = first.next;
+//			first.next.prev = first.prev;
+//			
+//			
+//		}
 		
 		return false;
 
@@ -283,6 +314,10 @@ public class EDDoubleLinkedList<T> implements List<T> {
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
+//		if (!c.isEmpty()) {
+//			c.clear();
+//			return true;
+//		}
 		return false;
 		// IMPLEMENTAR
 
