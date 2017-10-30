@@ -1,11 +1,15 @@
 package doubleLinkedList;
-
+import java.lang.IndexOutOfBoundsException;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+
+ 
+
+
 
 
 public class EDDoubleLinkedList<T> implements List<T> {
@@ -166,8 +170,7 @@ public class EDDoubleLinkedList<T> implements List<T> {
 	}
 
 	public int indexOf(Object element) {
-		// IMPLEMENTAR
-		int i = 0;
+		// IMPLEMENTAR		 
 		if (size() == 0) {
 			return -1;
 		}
@@ -193,11 +196,14 @@ public class EDDoubleLinkedList<T> implements List<T> {
 	}
 
 	public boolean remove(Object element) {
-		// IMPLEMENTAR
-		Node first = null;
+ 	 	// IMPLEMENTAR
+		if (element == null)	
+			throw new NullPointerException();
+		
+		Node first =  head;
 		int pos = indexOf(element);
-		first = head;
-		if (pos == -1) {
+		
+		if (pos < 0 || pos >= size()) {
 			return false;
 		}
 		for (int i = 0; i < pos; i++) {
@@ -210,43 +216,59 @@ public class EDDoubleLinkedList<T> implements List<T> {
 			return true;
 		}
 		
-//		
-//		if (head != null) {
-//			 first = head.next;
-//			 last = head.prev;
-//		}
-//		if (head == null) {
-//			return false;
-//		}else if (first.data.equals(element)) {//primero
-//			head.next = first.next;
-//			first.next.prev = last;
-//			last.next = first.next;	
-//		}else if (last.data.equals(element)) {//ultimo
-//			last.prev.next = first;
-//			first.prev = last.prev;
-//		}else{//al medio
-//			while (!first.data.equals(element)) {
-//				first = first.next;
-//			}
-//			first.prev.next = first.next;
-//			first.next.prev = first.prev;
-//			
-//			
-//		}
 		
 		return false;
 
-
+	 
 	}
 
 	public T remove(int index) {
-		return null;
-		// IMPLEMENTAR
+ 	 	// IMPLEMENTAR
+		if (index < 0 || index >= size()) {
+			throw new IndexOutOfBoundsException();
+		}
+		if (size() == 0) {
+			throw new IndexOutOfBoundsException();
+		}
+		Node aux = head;
+		Node first = head;
+
+		if (index == 0 && head.next != null) {//si hay mas de un elemento en la lista
+			Node auxHead = head;
+			head.next.prev= head.prev;
+			head.prev.next=head.next;
+			head = head.next;		 					
+			size--;
+			return auxHead.data;
+		}else if (index == size()-1) {
+			Node last = head.prev;
+			last.prev.next = last.next;
+			last.next.prev = last.prev;		
+			size--;
+			return last.data;
+		}
+			
+		for (int i = 0; i < index; i++) {
+			first = first.next;
+		}		
+		aux = first;
+		remove(first.data); 
+		return aux.data;
+	 	
 	}
 
 	public T set(int index, T element) {
-		return element;
 		// IMPLEMENTAR
+		if (index < 0 || index >= size()) {
+			throw new IndexOutOfBoundsException();
+		}
+		Node first =  head;
+		for (int i = 0; i < index; i++) {
+			first = first.next;
+		}
+		T old = first.data;
+		first.data = element;
+		return old;
 	}
 
 	public int size() {
@@ -293,8 +315,11 @@ public class EDDoubleLinkedList<T> implements List<T> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return false;
 		// IMPLEMENTAR
+		for (Object item : c)
+			if (!contains(item))
+				return false;
+		return true;
 	}
 
 
@@ -314,19 +339,36 @@ public class EDDoubleLinkedList<T> implements List<T> {
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-//		if (!c.isEmpty()) {
-//			c.clear();
-//			return true;
-//		}
-		return false;
 		// IMPLEMENTAR
+		boolean retValue = true;
+		for (Object item : c)
+			if (this.contains(item)) {
+				this.remove(item);
+				retValue = false;
+			}
+			
 
+		return retValue;
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		return false;
 		// IMPLEMENTAR
+		boolean retValue = false;
+		Node first = head.next;
+ 		if (c.isEmpty()) {
+ 			retValue = true;
+		}
+		for (int i = 0; i < size(); i++) {
+			T actual = get(i);
+			if (!c.contains(actual)) {//si no esta en la lista devolvemos false
+				remove(i);
+				retValue = true;
+			} 
+		} 
+		 
+		return retValue;
+
 	}
 
 	@Override
