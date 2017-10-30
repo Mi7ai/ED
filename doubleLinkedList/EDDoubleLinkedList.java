@@ -6,12 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-
- 
-
-
-
-
+/*
+ * @autor Mihai Manea
+ */
 public class EDDoubleLinkedList<T> implements List<T> {
 	/** Implementation of the circular Double linked List
 	 *
@@ -206,6 +203,13 @@ public class EDDoubleLinkedList<T> implements List<T> {
 		if (pos < 0 || pos >= size()) {
 			return false;
 		}
+		if (head.data.equals(element)) {
+			head.prev.next = head.next;
+			head.next.prev = head.prev;
+ 			head = head.next;	
+ 			size--;
+ 			return true;
+		}
 		for (int i = 0; i < pos; i++) {
 			first = first.next;
 		}
@@ -232,21 +236,24 @@ public class EDDoubleLinkedList<T> implements List<T> {
 		}
 		Node aux = head;
 		Node first = head;
+		 
 
-		if (index == 0 && head.next != null) {//si hay mas de un elemento en la lista
-			Node auxHead = head;
-			head.next.prev= head.prev;
-			head.prev.next=head.next;
-			head = head.next;		 					
-			size--;
-			return auxHead.data;
-		}else if (index == size()-1) {
-			Node last = head.prev;
-			last.prev.next = last.next;
-			last.next.prev = last.prev;		
-			size--;
-			return last.data;
-		}
+//		if (index == 0 && head.next != null) {//si hay mas de un elemento en la lista
+//			Node auxHead = head; 
+// 
+//			head.prev.next = head.next;
+//			head.next.prev = head.prev;
+// 			head = head.next;		
+//			size--;
+//			return auxHead.data;
+//		}else 
+//			if (index == size()-1) {
+//			Node last = head.prev;
+//			last.prev.next = last.next;
+//			last.next.prev = last.prev;		
+//			size--;
+//			return last.data;
+//		}
 			
 		for (int i = 0; i < index; i++) {
 			first = first.next;
@@ -340,11 +347,11 @@ public class EDDoubleLinkedList<T> implements List<T> {
 	@Override
 	public boolean removeAll(Collection<?> c) {
 		// IMPLEMENTAR
-		boolean retValue = true;
+		boolean retValue = false;
 		for (Object item : c)
 			if (this.contains(item)) {
 				this.remove(item);
-				retValue = false;
+				retValue = true;
 			}
 			
 
