@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
+/*
+ * @author Mihai Manea.
+ */
 
 /**
  * <p>Clase genérica que implementa la interface <code>Set<T></code> usando una tabla 
@@ -51,6 +53,27 @@ public class EDHashSet<T> implements Set<T> {
 	 */
 	private void rehash() {
 		// TODO Implementar 
+		T[] aux = table;
+		table =(T[]) new Object[aux.length*2];
+		used = new boolean[aux.length*2];
+		rehashThreshold = rehashThreshold*2;
+		
+		for (int i = 0; i < aux.length; i++) {
+			if (aux[i] != null) {
+				
+				int pos = hash(aux[i]);
+				while(used[pos] == true){//si la posifion esta usada, miro la siguiente hasta el infinito :)) 				
+					pos = (pos +1) % table.length;
+				}
+				
+				table[pos] = aux[i];
+				used[pos]  = true;
+				
+			}			
+			
+		}
+		
+
 	}
 
 	/**
@@ -95,46 +118,95 @@ public class EDHashSet<T> implements Set<T> {
 	@Override
 	public boolean contains(Object o) {
 		// TODO Implementar 
-		int i = 0;
+		
 		if ( o == null) {
 			return containsNull;
 		}
+		
 		int pos = hash((T)o);
 		
-		while(i < table.length){
-			 
+		while (used[pos] == true) {
+			if ( table[pos] != null && table[pos].equals(o)) {
+				return true;				
+			}
+			pos = (pos +1) % table.length;
+			
 		}
-				
 		return false;
 	}
 
 	@Override
 	public boolean add(T e) {
 		// TODO Implementar 
-		int pos = hash(e);	
-		
 		if (dirty >= rehashThreshold) {//si la tabla esta llena
 			rehash();//se hace el rehash y se reinsertan todos los elementos en la tabla.
 		}
-		
-		while(table[pos]!=null && !contains(e)){//mientras no sea null y no lo contenga
-			pos = (pos +1) % table.length;
-		}
-		if (!contains(e)) {//si no contiene el e lo añado
-			table[pos] = e;
-			used[pos] = true;
-			dirty++;
+		if (e == null) {
+			if (containsNull == true) {
+				return false;
+			}
+			containsNull = true;
 			size++;
 			return true;
 		}
-		
+
+
+		int pos = hash(e);	
+
+		if (contains(e) == false) {//si no lo contiene			
+
+			while(used[pos] == true){//si la posicion esta usada, miro la siguiente hasta el infinito :)) 				
+				pos = (pos +1) % table.length;
+			}
+
+			table[pos] = e;
+			used[pos]  = true;
+			dirty++;
+			size++;
+
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		return containsNull;
 		// TODO Implementar 
+
+		if (o == null) {
+			if (containsNull == false) {
+				return false;
+			}
+			containsNull = false;
+			size--;
+			return true;
+		}
+
+
+			int pos = hash((T)o);	
+			
+			if (contains(o) == true) {//si no lo contiene			
+			
+				while(used[pos] == true){//si la posicion esta usada, miro la siguiente hasta el infinito :)) 				
+					
+					if (o.equals(table[pos])) {
+						if (size==1) {
+							clear();
+						}else{
+							table[pos] = null;				 
+							size--;	
+						}
+							
+					}
+					
+					pos = (pos +1) % table.length;
+				}
+				
+							
+				return true;
+			}
+			return false;
+		
 	}
 
 	@Override
