@@ -1,1 +1,1 @@
-# Muerte y destrucción
+Muerte y destrucción
