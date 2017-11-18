@@ -129,7 +129,7 @@ public class EDDoubleLinkedList<T> implements List<T> {
 			nuevo.next = last.next;
 			first.prev = nuevo;
 			last.next = nuevo;
-		}else{//al medio
+		}else{//al medio, no hace falta
 			for (int i = 0; i < index; i++) {
 				first = first.next;//llego a donde hay que insertar
 			}
