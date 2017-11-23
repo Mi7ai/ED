@@ -1,11 +1,16 @@
 package ficheros;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -73,8 +78,8 @@ public class indexador {
 	 * @throws FileNotFoundException Si alguno de los ficheros no podido ser abierto.
 	 */
 	public static Map<String, List<Integer>> indexar(String fichero, Set<String> diccionario) throws FileNotFoundException {
-		//TODO: Implmentar para la pr�ctica
- 		HashMap<String, List<Integer>> mapIndexes = new HashMap<>();//crear diccionario vacio
+ 		HashMap<String, List<Integer>> mapIndexes = new HashMap<String,List<Integer>>();//crear diccionario vacio
+ 		
 		Scanner inputStream = streamRead(fichero);//devuelve el stream del fichero
 		int index = 0;
 		
@@ -91,7 +96,7 @@ public class indexador {
 			}
 			index++;
 		}
- 			
+ 		inputStream.close();	
 		return mapIndexes;
 	}
 	
@@ -99,7 +104,7 @@ public class indexador {
 	 * 
 	 * <p> El fichero binario consistir� en una secuancia de <code>Intger</code> conel siguiente formato:
 	 * <ol> 
-	 * <li> El primer <code>Intger</code> del fichero ser� el numero de palabras en el �ndice.  
+	 * <li> El primer <code>Integer</code> del fichero ser� el numero de palabras en el �ndice.  
 	 * <li> Por cada palabra del �ndice se guardar�n dos <codeIntger</code>: el �ndice de la palabra y el 
 	 * n�mero de apariciones de esa palabra en el fichero de texto (longitud de la lista de posiciones). 
 	 * Los pares de enteros se ordenar�n por orden del �ndice de las palabras.
@@ -118,10 +123,35 @@ public class indexador {
 	 * @throws IOException Si se produce cualquier fallo de apertura, escritura. 
 	 */
 	public static long escribirIndice(String fichero,  Map<String,List<Integer>> indice, Map<String, Integer> diccionario) throws IOException {
-		//TODO: implmentar
-		Scanner inputStream = streamRead(fichero);//devuelve del stream del fichero
 		
-		inputStream.close();
+//		Scanner inputStream = streamRead(fichero);//devuelve el stream del fichero
+		RandomAccessFile outputStream = null;//devuelve el stream del fichero
+		//PENDIENTE DE REVISAR TODO
+		try {
+			outputStream = new RandomAccessFile( fichero,"rw");//stream de escritura en el fichero
+			
+			//Bloque 1: numero de palabras en el indice
+//			int i = 0;			
+//			for (String palabra : indice.keySet()) {					
+// 	 			outputStream.writeInt(i);//escribe el indice de cada palabra
+//			}	i++;
+			
+			//Bloque 2
+			for (Entry<String, List<Integer>> entry : indice.entrySet()) {
+				
+				List<Integer> listaPosiciones = entry.getValue();
+				 
+ 	 			outputStream.writeInt(listaPosiciones.size());//escribe cuantas veces esa palabra se ha encontrado en un fichero
+			}	
+			 
+			
+		} catch (Exception e) {
+			System.out.println("Exception in escribirIndice...");
+			e.printStackTrace();
+		}finally{
+			outputStream.close();
+		}
+		outputStream.close();
 		return 0;
 	}
 		
@@ -139,7 +169,21 @@ public class indexador {
 	 * @throws IOException Si se produce alg�n error en la apertura/lectura del fichero binario. 
 	 */
 	public static List<Integer> buscaPalabra(String fichero, String palabra, Map<String,Integer> diccionario) throws IOException {
-		//TODO: implmentar para la pr�ctica
+		
+		RandomAccessFile inputStream = null;//devuelve el stream del fichero
+
+		try {
+			inputStream = new RandomAccessFile( fichero,"rw");//stream de lectura en el fichero
+			//hay que mover el puntero al bloque que toca, leer los datos y compararlos con el diccionario
+			 
+			inputStream.seek(fichero.length());
+			
+		} catch (Exception e) {
+			System.out.println("Exception in buscaPalabra...");
+			e.printStackTrace();
+		}finally {
+			inputStream.close();
+		}
 		return null;
 	}
 	
@@ -149,7 +193,7 @@ public class indexador {
 			outputStream = new Scanner(new FileInputStream(fileName));//abrir fichero
 		 	
 		}catch(FileNotFoundException e)		{
-			System.out.println("Error opening file "+fileName);
+			System.out.println("Error opening file. "+fileName);
 			System.exit(0);
 		}		
  		return outputStream;
