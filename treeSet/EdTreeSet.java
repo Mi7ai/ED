@@ -7,7 +7,9 @@ import java.util.NavigableSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
-
+/*
+ * @author Mihai Manea
+ */
 public class EdTreeSet<E extends Comparable <E>> implements Set<E>{
 
 	protected class BinaryNode {
@@ -192,8 +194,8 @@ public class EdTreeSet<E extends Comparable <E>> implements Set<E>{
 			removeReturn=true;
 			
 			if (r.left!=null && r.right!=null) {//hay elementos
-				E min = minimo(r.right);
-				r.data = min;
+				 
+				r.data = minimo(r.right);
 				r.right = borrarMinimo(r.right);
 			}else if (r.left!=null) {
 				r=r.left;
@@ -206,36 +208,63 @@ public class EdTreeSet<E extends Comparable <E>> implements Set<E>{
 		
 	}	
 
-	private E minimo(BinaryNode right) {
-		BinaryNode aux=right;
+	private E minimo(BinaryNode root) {
+		BinaryNode aux=root;
 		while (aux.left!=null) {
 			aux=aux.left;
 		}	
 		return aux.data;
 	}
-	private BinaryNode borrarMinimo(BinaryNode root) {
-		BinaryNode padre=root;
-		BinaryNode hijo=padre.left;
-
-		while (hijo.left!=null) {
-			hijo=hijo.left;
-			padre=padre.left;
-		}
-		if (hijo.right!=null) {
-			padre.left=hijo.right;
-		}
- 		return hijo.right;
-	}
+	private BinaryNode borrarMinimo(BinaryNode root) {//le paso el r.right del elemento que estoy buscando
+		BinaryNode r=root;
+ 
+		if (r.left==null && r.right==null) {
+			r=null;
+		}else if (r.left==null && r.right!=null) {// tiene hijo derecho
+			r=r.right;			
+		}else if(r.left!=null) {//llegar al nodo hoja
+			r.left= borrarMinimo(r.left);
+		}   	
+ 		return r;
+ 	}
 	/** 
 	 * E ceiling(E e)
 	 * Returns the least element in this set greater than or equal to the given element, 
 	 * or null if there is no such element.
 	 */
 	public E ceiling(E item) {
-		//Implement
-		return null;
+		if (isEmpty()) {
+			return null;
+		}		 
+		return ceiling(root,item);
 	}
 	
+
+	private E ceiling(BinaryNode root, E item) {
+		if (root==null) {
+			return null;		
+		}
+		if (compare(root.data, item)==0) {
+			return item;
+		}else if (compare(root.data, item)>0) {
+			E t = ceiling(root.left, item);
+			if (t==null) {
+				return root.data;
+			}else {
+				return t;
+			}
+		}else if (compare(root.data, item)<0) {
+			E t = ceiling(root.right, item);
+			if (t==null) {
+				return null;
+
+			}else {
+				return t;
+			}
+		}		
+		return null;	
+
+	}
 
 	@Override
 	public boolean addAll(Collection<? extends E> arg0) {
