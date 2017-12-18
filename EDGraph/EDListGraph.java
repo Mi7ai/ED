@@ -230,12 +230,49 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 	
 	
 	/** Set<T> suggest(T item)
-	 * Devuelve un conjunto con las etiquetas de los nodos que est�n a distancia 2 del nodo
-	 * con etiqueta item (es decir, sugiere amigos al nodo item, en funci�n de los amigos de este).
-	 * Si item no est� en el grafo, devuelve null
+	 * Devuelve un conjunto con las etiquetas de los nodos que esten a distancia 2 del nodo
+	 * con etiqueta item (es decir, sugiere amigos al nodo item, en funcion de los amigos de este).
+	 * Si item no esta en el grafo, devuelve null
 	 */
 	public Set<T> suggest(T item) {
+		Set<T> commomFriends = new HashSet<>();
 		
+		if (getNodeIndex(item)<0) {
+			return null;
+		}
+
+		//recorrer todos los nodos
+		for (Node<T> node : nodes) {
+			//en node tendremos cada nodo del vector
+ 			//buscar nodo con etiqueta item
+			if (node.data.equals(item)) {//he encontrado el nodo que buscaba
+				int actualIndex = getNodeIndex(node.data);//indice de item
+				//busco en la lista del nodo que he encontrado aquellos nodos target que tienen la resta de indices <=2
+				for (EDEdge<W> edge : node.lEdges) {
+					int searchedIndex =edge.getTarget();//el nodo al  que apunta el arco del Nodo que esta en actualIndex
+//					System.out.println("1 "+nodes.get(searchedIndex).data);
+					if (!commomFriends.contains(getNodeValue(searchedIndex))) {
+						commomFriends.add(getNodeValue(searchedIndex));
+					}
+					for (EDEdge<W> edgeFriends :nodes.get(searchedIndex).lEdges ) {//lista de arcos de los amigos de amigos
+						int searchedIndexFriend =edgeFriends.getTarget();//indice de los amigos de amigos de item
+						
+						if (!commomFriends.contains(getNodeValue(searchedIndexFriend)) && (getNodeIndex(item) != searchedIndexFriend) ) {
+							commomFriends.add(getNodeValue(searchedIndexFriend));
+							commomFriends.add(getNodeValue(searchedIndex));
+ 
+						}
+					}//end for Friends of Friends
+				}//end for Friends
+				
+			}
+			
+		}//end for nodes
+		for (T t : commomFriends) {
+			System.out.println(t);
+		}
+		return commomFriends;
+		 
 	}
 	
 	/** T mostPopular()
