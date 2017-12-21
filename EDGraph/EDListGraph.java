@@ -24,7 +24,7 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 	private class Node<T> {
 		T data;
 		List< EDEdge<W> > lEdges;
-		
+
 		Node (T data) {
 			this.data = data;
 			this.lEdges = new LinkedList< EDEdge<W> >();
@@ -37,12 +37,12 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 			return data.equals(anotherNode.data);
 		}
 	}
-	
+
 	// Private data
 	private ArrayList<Node<T>> nodes;  //Vector of nodes
 	private int size; //real number of nodes
 	private boolean directed;
-	
+
 	/** Constructor
 	 * @param direct <code>true</code> for directed edges; 
 	 * <code>false</code> for non directed edges.
@@ -53,13 +53,13 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 		nodes =  new ArrayList<Node<T>>();
 		size =0;
 	}
-	
+
 	public EDListGraph (boolean dir) {
 		directed = dir;
 		nodes =  new ArrayList<Node<T>>();
 		size =0;
 	}
-	
+
 	public int getSize() {
 		return size;
 	}
@@ -71,21 +71,21 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 	public boolean isEmpty() {
 		return size == 0;
 	}
-	
+
 	@Override
 	public int insertNode(T item) {
-			
-	    int i = 0;
-	    while (i<nodes.size() && nodes.get(i).data != null) i++;
-				
-	    Node<T> newNode = new Node<T>(item);
-	    if (i<nodes.size()) nodes.set(i,newNode);
-	    else nodes.add(newNode);
-	    size++;
-	    //System.out.println("Insertado en posicion "+i);
-	    return i;
+
+		int i = 0;
+		while (i<nodes.size() && nodes.get(i).data != null) i++;
+
+		Node<T> newNode = new Node<T>(item);
+		if (i<nodes.size()) nodes.set(i,newNode);
+		else nodes.add(newNode);
+		size++;
+		//System.out.println("Insertado en posicion "+i);
+		return i;
 	}
-	
+
 	@Override
 	public int getNodeIndex(T item) {
 		Node<T> aux = new Node<T>(item);
@@ -94,11 +94,11 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 
 	@Override
 	public T getNodeValue(int index) throws IndexOutOfBoundsException{
-		
+
 		return nodes.get(index).data;
-		
+
 	}
-	
+
 	@Override
 	public boolean insertEdge(EDEdge<W> edge) {
 		int sourceIndex = edge.getSource();
@@ -107,36 +107,36 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 			Node<T> nodeSr = nodes.get(sourceIndex);
 			Node<T> nodeTa = nodes.get(targetIndex);
 			if (nodeSr.data!=null && nodeTa.data != null) {
-			   if (!nodeSr.lEdges.contains(edge)) {
-				   nodeSr.lEdges.add(edge);
-				   nodes.set(sourceIndex,nodeSr); 
-				   if (!directed) {//no dirigido
-					  EDEdge<W> reverse = new EDEdge<W>(targetIndex,sourceIndex,edge.getWeight());
-					  nodeTa.lEdges.add(reverse);
-					  nodes.set(targetIndex, nodeTa);
-				   }
-				   return true;
-			    }
-			   else System.out.println("The graph has already this edge: "+edge.toString());
+				if (!nodeSr.lEdges.contains(edge)) {
+					nodeSr.lEdges.add(edge);
+					nodes.set(sourceIndex,nodeSr); 
+					if (!directed) {//no dirigido
+						EDEdge<W> reverse = new EDEdge<W>(targetIndex,sourceIndex,edge.getWeight());
+						nodeTa.lEdges.add(reverse);
+						nodes.set(targetIndex, nodeTa);
+					}
+					return true;
+				}
+				else System.out.println("The graph has already this edge: "+edge.toString());
 			}
 		}
 		return false;
 	}
-	
+
 	@Override
 	public EDEdge<W> getEdge (int source, int dest) {
 		if (source <0 || source >= nodes.size()) return null;
-		
-			Node<T> node = nodes.get(source);
-			if (node.data == null ) return null;
-			for (EDEdge<W> edge: node.lEdges)
-				if (edge.getTarget() == dest) return edge;
-			
-			return null;
+
+		Node<T> node = nodes.get(source);
+		if (node.data == null ) return null;
+		for (EDEdge<W> edge: node.lEdges)
+			if (edge.getTarget() == dest) return edge;
+
+		return null;
 	}
-	
-	
-	
+
+
+
 	@Override
 	public EDEdge<W> removeEdge(int source, int target, W weight) {
 		if (source <0 || source >= nodes.size() || target<0 || target >= nodes.size()) return null;
@@ -179,7 +179,7 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 					}
 				}
 			}
-			
+
 			Node<T> node = nodes.get(index);
 			node.lEdges.clear();
 			T ret = node.data;
@@ -191,23 +191,23 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 		}
 		return null;
 	}
-	
+
 	/**  Set<Integer> getAdyacentNodes(index)
 	 *  Devuelve el conjunto de nodos adyacentes al nodo de �ndice index
 	 */
 	@Override
 	public Set<Integer> getAdyacentNodes(int index) {
 		if (index < 0 || index >= nodes.size()) return new HashSet<Integer>();
-		
+
 		Set<Integer> ret = new HashSet<Integer>();
 		for (EDEdge<W> ed: nodes.get(index).lEdges) {
 			ret.add(ed.getTarget());
 		}
-		
+
 		return ret;
 	}
-	
-	
+
+
 	/** int[] distanceToAll (T item)
 	 * Devuelve la distancia (grados de separaci�n) del nodo con etiqueta item al resto de nodos.
 	 * Devuelve el resultado en un vector con una posici�n por cada nodo.
@@ -216,27 +216,85 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 	 */
 	@Override
 	public int[] distanceToAll (T item) {
-		
+		if (item == null) {
+			return null;
+		}
+		if (getNodeIndex(item)<0 ) {
+			return null;
+		}
+
+		int start = getNodeIndex(item);
+		System.out.println("El nodo es: "+getNodeValue(start));
+		int[] v = new int[getSize()];;
+
+		for (int i = 0; i < v.length; i++) {
+			v[i] = -1;
+		}		
+		v[start] = 1;
+		//		for (int i = 0; i < v.length; i++) {
+		//			System.out.println("V de "+i+"  "+v[i]);	
+		//		}
+
+		Queue<Integer> q = new LinkedList<>();
+		q.add(start);
+
+		while(!q.isEmpty()) {
+			int n = q.remove();
+			int dist = v[n]+1; 
+			System.out.println("Dist a "+getNodeValue(n)+"= "+dist+". n= "+n+". v[n] = "+v[n]);
+			for (EDEdge<W> edge : nodes.get(start).lEdges) {
+				int target = edge.getTarget();
+				System.out.println("Target= "+getNodeValue(target)+" con :" +v[target]);
+				if (v[target] == -1) {
+					v[target] = dist;
+					q.add(target);
+				}
+				for (int i = 0; i < v.length; i++) {
+					System.out.println("V de "+i+"  "+v[i]);	
+				}
+			}
+		}
+
+//		for (int i = 0; i < v.length; i++) {
+//			System.out.println("V de "+i+"  "+v[i]);	
+//		}
+		return v;
 	}
-	
-	
+
+
 	/** Set<T> common(T item1, T item2)
 	 * Devuelve un conjunto con las etiquetas de los nodos comunes entre item1 e item2
 	 * Si item1 o item2 no pertenecen al grafo, devuelve null
 	 */
 	public Set<T> common(T item1, T item2) {
-		
+		Set<T> commomFriends = new HashSet<>();
+
+		if (getNodeIndex(item1)>=0 && getNodeIndex(item2)>=0 ) {//si existen los nodos
+			for (EDEdge<W> edge : nodes.get(getNodeIndex(item1)).lEdges) {
+				T friend = getNodeValue(edge.getTarget());
+
+				for (EDEdge<W> edge2 : nodes.get(getNodeIndex(item2)).lEdges) {
+					T friend2 = getNodeValue(edge2.getTarget());
+
+					if (friend.equals(friend2)) {  
+						commomFriends.add(friend2);
+					} 
+				}	
+			}//end for edge			
+			return commomFriends;			
+		}
+		return null;
 	}
-	
-	
+
+
 	/** Set<T> suggest(T item)
 	 * Devuelve un conjunto con las etiquetas de los nodos que esten a distancia 2 del nodo
 	 * con etiqueta item (es decir, sugiere amigos al nodo item, en funcion de los amigos de este).
 	 * Si item no esta en el grafo, devuelve null
 	 */
 	public Set<T> suggest(T item) {
-		Set<T> commomFriends = new HashSet<>();
-		
+		Set<T> suggestFriends = new HashSet<>();
+
 		if (getNodeIndex(item)<0) {
 			return null;
 		}
@@ -244,37 +302,36 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 		//recorrer todos los nodos
 		for (Node<T> node : nodes) {
 			//en node tendremos cada nodo del vector
- 			//buscar nodo con etiqueta item
+			//buscar nodo con etiqueta item
 			if (node.data.equals(item)) {//he encontrado el nodo que buscaba
 				int actualIndex = getNodeIndex(node.data);//indice de item
 				//busco en la lista del nodo que he encontrado aquellos nodos target que tienen la resta de indices <=2
-				for (EDEdge<W> edge : node.lEdges) {
-					int searchedIndex =edge.getTarget();//el nodo al  que apunta el arco del Nodo que esta en actualIndex
-//					System.out.println("1 "+nodes.get(searchedIndex).data);
-					if (!commomFriends.contains(getNodeValue(searchedIndex))) {
-						commomFriends.add(getNodeValue(searchedIndex));
-					}
-					for (EDEdge<W> edgeFriends :nodes.get(searchedIndex).lEdges ) {//lista de arcos de los amigos de amigos
-						int searchedIndexFriend =edgeFriends.getTarget();//indice de los amigos de amigos de item
-						
-						if (!commomFriends.contains(getNodeValue(searchedIndexFriend)) && (getNodeIndex(item) != searchedIndexFriend) ) {
-							commomFriends.add(getNodeValue(searchedIndexFriend));
-							commomFriends.add(getNodeValue(searchedIndex));
- 
+				for (EDEdge<W> edge : node.lEdges) {//amigos primeros
+					int firstFriendIndex = edge.getTarget();//el nodo al  que apunta el arco del Nodo que esta en actualIndex
+
+					for (EDEdge<W> edgeFriends :nodes.get(firstFriendIndex).lEdges ) {//amigos segundos
+						int secondFriendIndex =edgeFriends.getTarget();//indice de los amigos de amigos de item
+						if ( !suggestFriends.contains(getNodeValue(secondFriendIndex)) && (getNodeIndex(item) != secondFriendIndex) ) {
+							suggestFriends.add(getNodeValue(secondFriendIndex));
 						}
 					}//end for Friends of Friends
 				}//end for Friends
-				
-			}
-			
+
+
+				for (EDEdge<W> edge : node.lEdges) {
+					if (suggestFriends.contains(getNodeValue(edge.getTarget()))) {
+						//						System.out.println("Valor a borrar "+getNodeValue(edge.getTarget()));
+						suggestFriends.remove(getNodeValue(edge.getTarget()));
+					}
+				}
+
+			}//end if equals item
 		}//end for nodes
-		for (T t : commomFriends) {
-			System.out.println(t);
-		}
-		return commomFriends;
-		 
+
+		return suggestFriends;
+
 	}
-	
+
 	/** T mostPopular()
 	 * Devuelve la etiqueta del nodo con m�s arcos (m�s amigos). Si el grafo est� vac�o,
 	 * devuelve null.
@@ -286,46 +343,46 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 		int maxDist=0;
 		T res = null;
 		for (int i = 0; i < nodes.size(); i++) {//vector de los nodos
-			 int ed = nodes.get(i).lEdges.size(); //lista de arcos de cada nodo
-				if (ed > maxDist) {
-					maxDist = ed;//el valor del nodo con mas amigos
-					res = getNodeValue(i);
-				}			
+			int ed = nodes.get(i).lEdges.size(); //lista de arcos de cada nodo
+			if (ed > maxDist) {
+				maxDist = ed;//el valor del nodo con mas amigos
+				res = getNodeValue(i);
+			}			
 		}
 		return res;
-		
+
 	}
-	
-	
+
+
 	public void printGraphStructure() {
 		//System.out.println("Vector size= " + nodes.length);
 		System.out.println("Vector size " + nodes.size());
 		System.out.println("Nodes: "+ this.getSize());
 		for (int i=0; i<nodes.size(); i++) {
 			System.out.print("pos "+i+": ");
-	        Node<T> node = nodes.get(i);
+			Node<T> node = nodes.get(i);
 			System.out.print(node.data+" -- ");
 			Iterator<EDEdge<W>> it = node.lEdges.listIterator();
 			while (it.hasNext()) {
-					EDEdge<W> e = it.next();
-					System.out.print("("+e.getSource()+","+e.getTarget()+", "+e.getWeight()+")->" );
+				EDEdge<W> e = it.next();
+				System.out.print("("+e.getSource()+","+e.getTarget()+", "+e.getWeight()+")->" );
 			}
 			System.out.println();
 		}
 	}
-	
-	
+
+
 	@Override
 	public void saveGraphStructure(RandomAccessFile f) {
-		
-		
-			try {
-				f.writeInt(this.size);
-			 //numero de nodos
-				//System.out.println("tama�o grafo "+this.size);
-				//f.seek(0);
-				//System.out.println("leido: "+f.readInt());
-				for (int i=0; i<nodes.size();i++) {
+
+
+		try {
+			f.writeInt(this.size);
+			//numero de nodos
+			//System.out.println("tama�o grafo "+this.size);
+			//f.seek(0);
+			//System.out.println("leido: "+f.readInt());
+			for (int i=0; i<nodes.size();i++) {
 				if (nodes.get(i)!=null) {
 					f.writeUTF((String) nodes.get(i).data);
 					f.writeInt(nodes.get(i).lEdges.size());
@@ -333,13 +390,13 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 						f.writeInt(edge.getTarget());
 				}
 			}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
-	
+
 	public Set<T> getNodes() {
 		Set<T> s = new HashSet<T>();
 		for (int i=0; i<nodes.size(); i++) {
