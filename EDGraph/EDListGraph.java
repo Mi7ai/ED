@@ -224,40 +224,27 @@ public class EDListGraph<T,W> implements EDGraph<T,W> {
 		}
 
 		int start = getNodeIndex(item);
-		System.out.println("El nodo es: "+getNodeValue(start));
-		int[] v = new int[getSize()];;
+ 		int[] v = new int[getSize()];;
 
 		for (int i = 0; i < v.length; i++) {
 			v[i] = -1;
 		}		
-		v[start] = 1;
-		//		for (int i = 0; i < v.length; i++) {
-		//			System.out.println("V de "+i+"  "+v[i]);	
-		//		}
-
+		v[start] = 0;
+	 
 		Queue<Integer> q = new LinkedList<>();
 		q.add(start);
 
 		while(!q.isEmpty()) {
 			int n = q.remove();
 			int dist = v[n]+1; 
-			System.out.println("Dist a "+getNodeValue(n)+"= "+dist+". n= "+n+". v[n] = "+v[n]);
-			for (EDEdge<W> edge : nodes.get(start).lEdges) {
+ 			for (EDEdge<W> edge : nodes.get(n).lEdges) {
 				int target = edge.getTarget();
-				System.out.println("Target= "+getNodeValue(target)+" con :" +v[target]);
-				if (v[target] == -1) {
+ 				if (v[target] == -1) {
 					v[target] = dist;
 					q.add(target);
-				}
-				for (int i = 0; i < v.length; i++) {
-					System.out.println("V de "+i+"  "+v[i]);	
-				}
+				}				 
 			}
 		}
-
-//		for (int i = 0; i < v.length; i++) {
-//			System.out.println("V de "+i+"  "+v[i]);	
-//		}
 		return v;
 	}
 
